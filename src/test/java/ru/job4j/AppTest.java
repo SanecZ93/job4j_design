@@ -16,7 +16,7 @@ public class AppTest extends TestCase {
      * @param testName name of the test case
      */
 
-    public AppTest(tring testName) {
+    public AppTest(String testName) {
         super(testName);
     }
 
