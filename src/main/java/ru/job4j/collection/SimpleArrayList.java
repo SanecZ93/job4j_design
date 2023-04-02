@@ -22,8 +22,7 @@ public class SimpleArrayList<T> implements SimpleList<T> {
     @Override
     public void add(T value) {
         checkSize();
-        container[size] = value;
-        size++;
+        container[size++] = value;
         modCount++;
     }
 
