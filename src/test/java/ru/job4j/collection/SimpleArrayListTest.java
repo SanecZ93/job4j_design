@@ -112,7 +112,7 @@ class SimpleArrayListTest {
 
     @Test
     void whenSetThenGetOldValueAndSizeNotChanged() {
-        assertThat(list.set(1, 22)).isEqualTo(22);
+        assertThat(list.set(1, 22)).isEqualTo(2);
         assertThat(list.size()).isEqualTo(3);
     }
 
