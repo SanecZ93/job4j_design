@@ -8,17 +8,18 @@ public class SimpleLinkedList<E> implements LinkedList<E> {
     private int size = 0;
     private int modCount = 0;
     private Node<E> head;
-    private Node<E> last;
 
     @Override
     public void add(E value) {
-        final Node<E> temp = last;
-        final  Node<E> newNode = new Node<>(last, value, null);
-        last = newNode;
-        if (temp == null) {
+        final Node<E> newNode = new Node<>(value, null);
+        if (head == null) {
             head = newNode;
         } else {
-            temp.next = newNode;
+            Node<E> current = head;
+            while (current.next != null) {
+                current = current.next;
+            }
+            current.next = newNode;
         }
         size++;
         modCount++;
@@ -30,17 +31,10 @@ public class SimpleLinkedList<E> implements LinkedList<E> {
             throw new IndexOutOfBoundsException();
         }
         Node<E> current;
-        if (index <= this.size / 2) {
             current = head;
             for (int a = 0; a < index; a++) {
                 current = current.next;
             }
-        } else {
-            current = last;
-            for (int a = this.size - 1; a > index; a--) {
-                current = current.prev;
-            }
-        }
         return current.item;
     }
 
@@ -73,13 +67,10 @@ public class SimpleLinkedList<E> implements LinkedList<E> {
     private static class Node<E> {
         private E item;
         private Node<E> next;
-        private Node<E> prev;
 
-        Node(Node<E> prev, E element, Node<E> next) {
+        Node(E element, Node<E> next) {
             this.item = element;
             this.next = next;
-            this.prev = prev;
-
         }
     }
 }
