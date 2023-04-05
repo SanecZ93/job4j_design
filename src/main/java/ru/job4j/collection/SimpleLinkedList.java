@@ -30,8 +30,7 @@ public class SimpleLinkedList<E> implements LinkedList<E> {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
-        Node<E> current;
-            current = head;
+        Node<E> current = head;
             for (int a = 0; a < index; a++) {
                 current = current.next;
             }
