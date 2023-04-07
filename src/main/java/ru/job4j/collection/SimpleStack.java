@@ -13,8 +13,4 @@ public class SimpleStack<T> {
 
         linked.addFirst(value);
     }
-
-    public void addLat(T value) {
-        linked.add(value);
-    }
 }
