@@ -13,17 +13,17 @@ public class SimpleQueue<T> {
         if (sizeIn == 0) {
             throw new NoSuchElementException("Queue is empty");
         }
-        if (sizeOut > 0) {
-            sizeOut--;
-            return out.pop();
+        T rsl;
+        if (sizeOut == 0) {
+            while (sizeIn > 0) {
+                out.push(in.pop());
+                sizeIn--;
+                sizeOut++;
+            }
         }
-        while (sizeIn > 0) {
-            out.push(in.pop());
-            sizeIn--;
-            sizeOut++;
-        }
+        rsl = out.pop();
         sizeOut--;
-        return out.pop();
+        return rsl;
     }
 
     public void push(T value) {
