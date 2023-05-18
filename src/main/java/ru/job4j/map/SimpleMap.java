@@ -48,11 +48,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
             if (tab == null) {
                 continue;
             }
-            if (tab.key == null) {
-                newTable[0] = tab;
-            } else {
-                newTable[indexFor(tab.key)] = tab;
-            }
+            newTable[indexFor(tab.key)] = tab;
         }
         table = newTable;
     }
