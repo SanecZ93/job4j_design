@@ -45,10 +45,9 @@ public class SimpleMap<K, V> implements Map<K, V> {
         capacity += 8;
         MapEntry<K, V>[] newTable = new MapEntry[capacity];
         for (MapEntry<K, V> tab : table) {
-            if (tab == null) {
-                continue;
+            if (tab != null) {
+                newTable[indexFor(tab.key)] = tab;
             }
-            newTable[indexFor(tab.key)] = tab;
         }
         table = newTable;
     }
