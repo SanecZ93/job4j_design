@@ -18,11 +18,10 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean put(K key, V value) {
-        int index = indexFor(key);
-        if (count >= table.length * LOAD_FACTOR) {
+        if (count >= capacity * LOAD_FACTOR) {
             expand();
-            index = indexFor(key);
         }
+        int index = indexFor(hash(hashCode(key)));
         boolean rsl = table[index] == null;
         if (rsl) {
             table[index] = new MapEntry<>(key, value);
@@ -32,13 +31,28 @@ public class SimpleMap<K, V> implements Map<K, V> {
         return rsl;
     }
 
+    private int hashCode(K key) {
+
+        return key == null ? 0 : key.hashCode();
+    }
+
     private int hash(int hashCode) {
+
         return hashCode ^ (hashCode >>> 16);
     }
 
-    private int indexFor(K key) {
-        int hash = key == null ? 0 : hash(key.hashCode());
+    private int indexFor(int hash) {
+
         return hash & (capacity - 1);
+    }
+
+    private boolean equalsKey(K key) {
+        int index = indexFor(hash(hashCode(key)));
+        return  (table[index] != null
+                && (key != null && table[index].key != null)
+                && table[index].key.hashCode() == key.hashCode()
+                && key.equals(table[index].key))
+                || (key == null && table[0] != null && table[0].key == null);
     }
 
     private void expand() {
@@ -46,7 +60,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
         MapEntry<K, V>[] newTable = new MapEntry[capacity];
         for (MapEntry<K, V> tab : table) {
             if (tab != null) {
-                newTable[indexFor(tab.key)] = tab;
+                newTable[indexFor(hash(hashCode(tab.key)))] = tab;
             }
         }
         table = newTable;
@@ -54,25 +68,15 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(K key) {
-        V value = null;
-        int index = key == null ? 0 : indexFor(key);
-        if (table[index] != null) {
-            if ((key != null && table[index].key != null) && table[index].key.hashCode() == key.hashCode()
-                    && (table[index].key == key || key.equals(table[index].key))) {
-             value = table[index].value;
-            }
-        }
-        if (key == null && table[0] != null && table[0].key == null) {
-            value = table[0].value;
-        }
-        return value;
+        int index = indexFor(hash(hashCode(key)));
+        return equalsKey(key) ? table[index].value : null;
     }
 
     @Override
     public boolean remove(K key) {
-        int index = key == null ? 0 : indexFor(key);
-        boolean rsl = get(key) != null;
+        boolean rsl = equalsKey(key);
         if (rsl) {
+            int index = indexFor(hash(hashCode(key)));
             table[index] = null;
             count--;
             modCount++;
@@ -82,11 +86,9 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public Iterator<K> iterator() {
-        int expectedModCount = modCount;
         return new Iterator<>() {
-            private final int size = count;
+            final int expectedModCount = modCount;
 
-            private int element = 0;
             private int index = 0;
 
             @Override
@@ -94,7 +96,10 @@ public class SimpleMap<K, V> implements Map<K, V> {
                 if (expectedModCount != modCount) {
                     throw new ConcurrentModificationException();
                 }
-                return element < size;
+                while (index < capacity && table[index] == null) {
+                    index++;
+                }
+                return index < capacity;
             }
 
             @Override
@@ -102,10 +107,6 @@ public class SimpleMap<K, V> implements Map<K, V> {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                while (table[index] == null) {
-                    index++;
-                }
-                element++;
                 return table[index++].key;
             }
         };
