@@ -1,8 +1,6 @@
 package ru.job4j.map;
 
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class SimpleMap<K, V> implements Map<K, V> {
 
@@ -22,7 +20,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
             expand();
         }
         int index = getIndex(key);
-        boolean rsl = table[index] == null;
+        boolean rsl = Objects.isNull(table[index]);
         if (rsl) {
             table[index] = new MapEntry<>(key, value);
             count++;
@@ -39,22 +37,20 @@ public class SimpleMap<K, V> implements Map<K, V> {
         return hash & (capacity - 1);
     }
     private int getIndex(K key) {
-        return key == null ? 0 : indexFor(hash(key.hashCode()));
+        return  indexFor(hash(Objects.hashCode(key)));
     }
 
     private boolean equalsKey(K key, int index) {
-        return  (table[index] != null)
-                && (((key != null && table[index].key != null)
-                && table[index].key.hashCode() == key.hashCode()
-                && key.equals(table[index].key))
-                || (key == null && table[index].key == null));
+        return  Objects.nonNull(table[index])
+                && Objects.hashCode(table[index].key) == Objects.hashCode(key)
+                && Objects.equals(table[index].key, key);
     }
 
     private void expand() {
         capacity *= 2;
         MapEntry<K, V>[] newTable = new MapEntry[capacity];
         for (MapEntry<K, V> tab : table) {
-            if (tab != null) {
+            if (Objects.nonNull(tab)) {
                 newTable[getIndex(tab.key)] = tab;
             }
         }
